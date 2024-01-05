@@ -1,1 +1,15 @@
-
+<button (click)="viewPile(1)" [disabled]="viewPile2() || viewPile3()">View Pile 1</button>
+<button (click)="viewPile(2)" [disabled]="viewPile1() || viewPile3()">View Pile 2</button>
+<button (click)="viewPile(3)" [disabled]="viewPile1() || viewPile2()">View Pile 3</button>
+<ul *ngIf="viewPile1()">
+    <li *ngFor="let unit of pile1">{{unit}}</li>
+    <button (click)="doNotSelect(1)">I don't want any of these</button>
+</ul>
+<ul *ngIf="viewPile2()">
+    <li *ngFor="let unit of pile2">{{unit}}</li>
+    <button (click)="doNotSelect(2)">I don't want any of these</button>
+</ul>
+<ul *ngIf="viewPile3()">
+    <li *ngFor="let unit of pile3">{{unit}}</li>
+    <button (click)="doNotSelect(3)">I don't want any of these</button>
+</ul>
