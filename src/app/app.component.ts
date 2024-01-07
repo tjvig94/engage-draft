@@ -18,7 +18,6 @@ export class AppComponent implements OnInit {
   yourPool: WritableSignal<string[]> = signal([])
   cpu1Pool: WritableSignal<string[]> = signal([])
   cpu2Pool: WritableSignal<string[]> = signal([])
-  cpu3Pool: WritableSignal<string[]> = signal([])
 
   viewPile1: WritableSignal<boolean> = signal(false)
   viewPile2: WritableSignal<boolean> = signal(false)
@@ -28,14 +27,14 @@ export class AppComponent implements OnInit {
   viewedPile2: WritableSignal<boolean> = signal(false)
   viewedPile3: WritableSignal<boolean> = signal(false)
 
-  yourTurn: WritableSignal<boolean> = signal(false)
-  cpuTurn: WritableSignal<boolean> = signal(false)
+  yourTurn: WritableSignal<boolean> = signal(true)
   
   ngOnInit(): void {
     this.unitStack = arrayShuffle(units);
     this.moveFromUnitStackToPile(1);
     this.moveFromUnitStackToPile(2);
     this.moveFromUnitStackToPile(3);
+    this.yourTurn.set(true)
   }
 
   endTurn() {
@@ -45,11 +44,12 @@ export class AppComponent implements OnInit {
     this.viewedPile3.set(false)
     this.takeCPUTurn(this.cpu1Pool)
     this.takeCPUTurn(this.cpu2Pool)
-    this.takeCPUTurn(this.cpu3Pool)
+    this.yourTurn.set(true)
   }
 
   moveFromUnitStackToPile(pileNum: number): void {
     if (this.unitStack.length === 0) return;
+    console.log('added', this.unitStack[0], 'to pile', pileNum)
     switch(pileNum) {
       case 1:
         this.pile1.push(this.unitStack[0])
@@ -68,13 +68,26 @@ export class AppComponent implements OnInit {
 
   moveUnitFromStackToPool(pool: WritableSignal<string[]>) {
     pool.mutate(units => units.push(this.unitStack[0]))
+    console.log('cpu took', this.unitStack[0], 'from the stack')
     this.unitStack.splice(0,1)
   }
 
-  selectUnit(pile: string[], pool: WritableSignal<string[]>, unitIndex: number, pileNum?: number): void {
+  selectUnitByName(pile: string[], pool: WritableSignal<string[]>, unit: string, pileNum?: number): void {
+    const unitIndex = pile.indexOf(unit);
     pool.mutate(units => units.push(pile[unitIndex]))
-    pile.splice(unitIndex,1);
-    console.log('selected unit', pile[unitIndex])
+    pile.splice(unitIndex, 1);
+    if (pileNum) {
+      this.hidePile(pileNum);
+      this.moveFromUnitStackToPile(pileNum)
+      this.yourTurn.set(false);
+      this.endTurn();
+    }
+  }
+
+  selectUnitByIndex(pile: string[], pool: WritableSignal<string[]>, unitIndex: number, pileNum?: number): void {
+    pool.mutate(units => units.push(pile[unitIndex]))
+    console.log('selected', pile[unitIndex])
+    pile.splice(unitIndex, 1);
     if (pileNum) {
       this.hidePile(pileNum);
     }
@@ -112,7 +125,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  doNotSelect(pileNum: number) {
+  doNotSelect(pileNum: number, pool?: WritableSignal<string[]>) {
     this.hidePile(pileNum)
     this.moveFromUnitStackToPile(pileNum)
     switch(pileNum) {
@@ -124,6 +137,8 @@ export class AppComponent implements OnInit {
         break;
       case 3:
         this.viewedPile3.set(true)
+        if (pool) this.moveUnitFromStackToPool(pool)
+        this.endTurn()
         break;
       default:
         throw Error('unrecognized pile number in doNotSelect')
@@ -131,47 +146,38 @@ export class AppComponent implements OnInit {
   }
 
   takeCPUTurn(cpuPool: WritableSignal<string[]>): void {
-    this.cpuTurn.set(true)
     const initialPoolLength = R.clone(cpuPool.length)
     for (let i = 1; i < 5; i++) {
       switch(i) {
         case 1:
           if ((Math.random() < 0.5)) {
             this.moveFromUnitStackToPile(1)
-            console.log('cpu added to pile 1')
             break;
           }
-          this.selectUnit(this.pile1, cpuPool, (Math.floor(Math.random() * this.pile1.length)))
+          this.selectUnitByIndex(this.pile1, cpuPool, (Math.floor(Math.random() * this.pile1.length)))
           this.moveFromUnitStackToPile(1)
-          console.log('cpu took from pile 1')
           return;
         case 2:
           if (!(Math.random() < 0.5)) {
             this.moveFromUnitStackToPile(2)
-            console.log('cpu added to pile 2')
             break;
           }
-          this.selectUnit(this.pile2, cpuPool, (Math.floor(Math.random() * this.pile2.length)))
+          this.selectUnitByIndex(this.pile2, cpuPool, (Math.floor(Math.random() * this.pile2.length)))
           this.moveFromUnitStackToPile(2)
-          console.log('cpu took from pile 2')
           return;
         case 3:
-          if (!(Math.random() < 0.5)) {
+          if (!(Math.random() < 0.5) && !(this.unitStack.length === 0)) {
             this.moveFromUnitStackToPile(3)
-            console.log('cpu added to pile 3')
             break;
           }
-          this.selectUnit(this.pile3, cpuPool, (Math.floor(Math.random() * this.pile3.length)))
+          this.selectUnitByIndex(this.pile3, cpuPool, (Math.floor(Math.random() * this.pile3.length)))
           this.moveFromUnitStackToPile(3)
-          console.log('cpu took from pile 3')
           return;
         case 4:
           this.moveUnitFromStackToPool(cpuPool)
-          console.log('cpu took from the shuffled stack')
           break;
       }
       if (cpuPool.length !== initialPoolLength) break;
     }
-    this.cpuTurn.set(false)
   }
 }
