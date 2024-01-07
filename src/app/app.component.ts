@@ -49,7 +49,6 @@ export class AppComponent implements OnInit {
 
   moveFromUnitStackToPile(pileNum: number): void {
     if (this.unitStack.length === 0) return;
-    console.log('added', this.unitStack[0], 'to pile', pileNum)
     switch(pileNum) {
       case 1:
         this.pile1.push(this.unitStack[0])
@@ -68,7 +67,6 @@ export class AppComponent implements OnInit {
 
   moveUnitFromStackToPool(pool: WritableSignal<string[]>) {
     pool.mutate(units => units.push(this.unitStack[0]))
-    console.log('cpu took', this.unitStack[0], 'from the stack')
     this.unitStack.splice(0,1)
   }
 
@@ -86,7 +84,6 @@ export class AppComponent implements OnInit {
 
   selectUnitByIndex(pile: string[], pool: WritableSignal<string[]>, unitIndex: number, pileNum?: number): void {
     pool.mutate(units => units.push(pile[unitIndex]))
-    console.log('selected', pile[unitIndex])
     pile.splice(unitIndex, 1);
     if (pileNum) {
       this.hidePile(pileNum);
