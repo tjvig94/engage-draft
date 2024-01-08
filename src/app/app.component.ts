@@ -83,8 +83,11 @@ export class AppComponent implements OnInit {
   }
 
   selectUnitByIndex(pile: string[], pool: WritableSignal<string[]>, unitIndex: number, pileNum?: number): void {
-    pool.mutate(units => units.push(pile[unitIndex]))
-    pile.splice(unitIndex, 1);
+    const unit = pile[unitIndex]
+    if (unit) {
+      pool.mutate(units => units.push(pile[unitIndex]))
+      pile.splice(unitIndex, 1);
+    }
     if (pileNum) {
       this.hidePile(pileNum);
     }
@@ -147,29 +150,29 @@ export class AppComponent implements OnInit {
     for (let i = 1; i < 5; i++) {
       switch(i) {
         case 1:
-          if ((Math.random() < 0.5)) {
+          if ((Math.random() < 0.5) || (this.pile2.length === 0 && this.pile3.length === 0 && this.unitStack.length === 0)) {
+            this.selectUnitByIndex(this.pile1, cpuPool, (Math.floor(Math.random() * this.pile1.length)))
             this.moveFromUnitStackToPile(1)
-            break;
+            return;
           }
-          this.selectUnitByIndex(this.pile1, cpuPool, (Math.floor(Math.random() * this.pile1.length)))
           this.moveFromUnitStackToPile(1)
-          return;
+          break;
         case 2:
-          if (!(Math.random() < 0.5)) {
+          if ((Math.random() < 0.5) || (this.pile3.length === 0 && this.unitStack.length === 0)) {
+            this.selectUnitByIndex(this.pile2, cpuPool, (Math.floor(Math.random() * this.pile2.length)))
             this.moveFromUnitStackToPile(2)
-            break;
+            return;
           }
-          this.selectUnitByIndex(this.pile2, cpuPool, (Math.floor(Math.random() * this.pile2.length)))
           this.moveFromUnitStackToPile(2)
-          return;
+          break;
         case 3:
-          if (!(Math.random() < 0.5) && !(this.unitStack.length === 0)) {
+          if ((Math.random() < 0.5) || this.unitStack.length === 0) {
+            this.selectUnitByIndex(this.pile3, cpuPool, (Math.floor(Math.random() * this.pile3.length)))
             this.moveFromUnitStackToPile(3)
-            break;
+            return;
           }
-          this.selectUnitByIndex(this.pile3, cpuPool, (Math.floor(Math.random() * this.pile3.length)))
           this.moveFromUnitStackToPile(3)
-          return;
+          break;
         case 4:
           this.moveUnitFromStackToPool(cpuPool)
           break;
