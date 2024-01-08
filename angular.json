@@ -18,7 +18,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/engage-draft",
-            "index": "index.html",
+            "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
               "zone.js"
