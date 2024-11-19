@@ -2,6 +2,7 @@ import { Component, OnInit, WritableSignal, signal } from '@angular/core';
 import arrayShuffle from 'array-shuffle';
 import { units } from '../constants/units';
 import * as R from 'ramda'
+import { UnitCard } from './components/unit-stack/unit-card.component';
 
 @Component({
   selector: 'app-root',
@@ -42,8 +43,8 @@ export class AppComponent implements OnInit {
     this.viewedPile1.set(false)
     this.viewedPile2.set(false)
     this.viewedPile3.set(false)
-    this.takeCPUTurn(this.cpu1Pool)
-    this.takeCPUTurn(this.cpu2Pool)
+    setTimeout(() => this.takeCPUTurn(this.cpu1Pool), 1000)
+    setTimeout(() => this.takeCPUTurn(this.cpu2Pool), 1000)
     this.yourTurn.set(true)
   }
 
@@ -77,7 +78,6 @@ export class AppComponent implements OnInit {
     if (pileNum) {
       this.hidePile(pileNum);
       this.moveFromUnitStackToPile(pileNum)
-      this.yourTurn.set(false);
       this.endTurn();
     }
   }
