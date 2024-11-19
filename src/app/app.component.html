@@ -1,30 +1,34 @@
-<h3 *ngIf="yourTurn()">It's your turn to choose</h3>
-<h3 *ngIf="!yourTurn()">Cpu's taking their turn...</h3>
-<p>{{unitStack.length}} units in the stack</p>
-<button (click)="viewPile(1)" [disabled]="!yourTurn() || viewedPile1()">View Pile 1 ({{pile1.length}} units)</button>
-<button (click)="viewPile(2)" [disabled]="!yourTurn() || viewedPile2() || !viewedPile1()">View Pile 2 ({{pile2.length}} units)</button>
-<button (click)="viewPile(3)" [disabled]="!yourTurn() || viewedPile3() || !viewedPile2()">View Pile 3 ({{pile3.length}} units)</button>
-<div *ngIf="viewPile1()">
-    <button *ngFor="let unit of pile1" (click)="selectUnitByName(pile1, yourPool, unit, 1)">{{unit}}</button>
-    <button (click)="doNotSelect(1)" [disabled]="pile2.length === 0 && pile3.length === 0 && unitStack.length === 0">I don't want any of these</button>
-</div>
-<div *ngIf="viewPile2()">
-    <button *ngFor="let unit of pile2" (click)="selectUnitByName(pile2, yourPool, unit, 2)">{{unit}}</button>
-    <button (click)="doNotSelect(2)" [disabled]="pile3.length === 0 && unitStack.length === 0">I don't want any of these</button>
-</div>
-<div *ngIf="viewPile3()">
-    <button *ngFor="let unit of pile3" (click)="selectUnitByName(pile3, yourPool, unit, 3)">{{unit}}</button>
-    <button (click)="doNotSelect(3, yourPool)" [disabled]="unitStack.length === 0">I don't want any of these</button>
-</div>
-<h1>Your hand</h1>
-<ul>
-    <li *ngFor="let unit of yourPool()">{{unit}}</li>
-</ul>
-<h2>CPU 1</h2>
-<ul>
-    <li *ngFor="let unit of cpu1Pool()">{{unit}}</li>
-</ul>
-<h2>CPU 2</h2>
-<ul>
-    <li *ngFor="let unit of cpu2Pool()">{{unit}}</li>
-</ul>
+<main class="container-md">
+    <p><strong>{{unitStack.length}}</strong> units in the stack</p>
+    <button (click)="viewPile(1)" [disabled]="!yourTurn() || viewedPile1()">View Pile 1 ({{pile1.length}} units)</button>
+    <button (click)="viewPile(2)" [disabled]="!yourTurn() || viewedPile2() || !viewedPile1()">View Pile 2 ({{pile2.length}} units)</button>
+    <button (click)="viewPile(3)" [disabled]="!yourTurn() || viewedPile3() || !viewedPile2()">View Pile 3 ({{pile3.length}} units)</button>
+    <div *ngIf="viewPile1()" class="unit-pile">
+        <unit-card *ngFor="let unit of pile1" (click)="selectUnitByName(pile1, yourPool, unit, 1)" [name]="unit"></unit-card>
+        <button (click)="doNotSelect(1)" [disabled]="pile2.length === 0 && pile3.length === 0 && unitStack.length === 0">I don't want any of these</button>
+    </div>
+    <div *ngIf="viewPile2()" class="unit-pile">
+        <unit-card *ngFor="let unit of pile2" (click)="selectUnitByName(pile2, yourPool, unit, 2)" [name]="unit"></unit-card>
+        <button (click)="doNotSelect(2)" [disabled]="pile3.length === 0 && unitStack.length === 0">I don't want any of these</button>
+    </div>
+    <div *ngIf="viewPile3()" class="unit-pile">
+        <unit-card *ngFor="let unit of pile3" (click)="selectUnitByName(pile3, yourPool, unit, 3)" [name]="unit"></unit-card>
+        <button (click)="doNotSelect(3, yourPool)" [disabled]="unitStack.length === 0">I don't want any of these</button>
+    </div>
+    <div class="your-hand">
+        <h1>Your units</h1>
+        <ul class="row your-unit-list">
+            <unit-card *ngFor="let unitName of yourPool()" [name]="unitName"></unit-card>
+        </ul>
+    </div>
+    
+    <!-- <h2>CPU 1</h2>
+    <ul>
+        <unit-card *ngFor="let unitName of cpu1Pool()" [name]="unitName"></unit-card>
+    </ul>
+    <h2>CPU 2</h2>
+    <ul>
+        <unit-card *ngFor="let unitName of cpu2Pool()" [name]="unitName"></unit-card>
+    </ul> -->
+</main>
+
